@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Bank Account Recommender</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a6dcc;
+            --primary-dark: #1352a0;
+            --secondary: #ff6b35;
+            --accent: #2ecc71;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        header h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 20px auto 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .form-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 109, 204, 0.2);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 109, 204, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #e55a2b;
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .best-option {
+            background: linear-gradient(135deg, #1a6dcc 0%, #2a8bf0 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(26, 109, 204, 0.2);
+        }
+
+        .best-option h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .best-option .bank-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .best-option .highlight {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .best-option .interest {
+            font-size: 1.8rem;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+
+        .explanation {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            margin: 25px 0;
+        }
+
+        .explanation h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 16px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fbff;
+        }
+
+        tr:hover {
+            background-color: #e9f2ff;
+        }
+
+        .account-type {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .savings {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .fixed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .interest-amount {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .no-results p {
+            font-size: 1.2rem;
+            color: var(--gray);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-piggy-bank"></i> SL Bank Account Recommender</h1>
+            <p>Find the best savings and fixed deposit options from Sri Lankan banks based on your deposit amount</p>
+        </header>
+
+        <div class="card">
+            <h2><i class="fas fa-user-edit"></i> Your Details</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="amount">Deposit Amount (LKR)</label>
+                    <input type="number" id="amount" placeholder="e.g. 100000" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">Investment Duration</label>
+                    <select id="duration">
+                        <option value="6">6 months</option>
+                        <option value="12" selected>12 months</option>
+                        <option value="24">24 months</option>
+                        <option value="36">36 months</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="account-type">Account Type Preference</label>
+                    <select id="account-type">
+                        <option value="any">Any Account Type</option>
+                        <option value="savings">Savings Only</option>
+                        <option value="fixed">Fixed Deposit Only</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn" id="calculate-btn">
+                <i class="fas fa-calculator"></i> Find Best Accounts
+            </button>
+        </div>
+
+        <div class="explanation">
+            <h3><i class="fas fa-info-circle"></i> How We Calculate Interest</h3>
+            <p>We use the simple interest formula: <strong>Interest = (Principal × Rate × Time) / 100</strong>. For fixed deposits, we calculate interest for the specified duration. For savings accounts, we assume a 12-month period.</p>
+        </div>
+
+        <div id="results-container">
+            <!-- Results will be inserted here -->
+        </div>
+
+        <footer>
+            <p>© 2023 SL Bank Account Recommender | Data based on current rates from Sri Lankan banks</p>
+            <p>Note: Actual rates may vary. Please contact banks directly for the most up-to-date information.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Sample bank data for Sri Lankan banks
+        const banks = [
+            {
+                "name": "Commercial Bank of Ceylon",
+                "logo": "fas fa-university",
+                "savings": {
+                    "minAmount": 1000,
+                    "interestRate": 5.5
+                },
+                "fixedDeposit": {
+                    "minAmount": 5000,
+                    "interestRate": 11.0,
+                    "durationMonths": 12
+                }
+            },
+            {
+                "name": "Bank of Ceylon",
+                "logo": "fas fa-landmark",
+                "savings": {
+                    "minAmount": 500,
+                    "interestRate": 4.75
+                },
+                "fixedDeposit": {
+                    "minAmount": 10000,
+                    "interestRate": 10.5,
+                    "durationMonths": 12
+                }
+            },
+            {
+                "name": "Seylan Bank",
+                "logo": "fas fa-building",
+                "savings": {
+                    "minAmount": 1000,
+                    "interestRate": 5.25
+                },
+                "fixedDeposit": {
+                    "minAmount": 5000,
+                    "interestRate": 11.5,
+                    "durationMonths": 12
+                }
+            },
+            {
+                "name": "Nations Trust Bank",
+                "logo": "fas fa-piggy-bank",
+                "savings": {
+                    "minAmount": 1000,
+                    "interestRate": 5.0
+                },
+                "fixedDeposit": {
+                    "minAmount": 10000,
+                    "interestRate": 12.0,
+                    "durationMonths": 12
+                }
+            },
+            {
+                "name": "HDFC Bank (SL)",
+                "logo": "fas fa-chart-line",
+                "savings": {
+                    "minAmount": 1000,
+                    "interestRate": 4.5
+                },
+                "fixedDeposit": {
+                    "minAmount": 5000,
+                    "interestRate": 10.75,
+                    "durationMonths": 12
+                }
+            },
+            {
+                "name": "Sampath Bank",
+                "logo": "fas fa-coins",
+                "savings": {
+                    "minAmount": 1000,
+                    "interestRate": 5.0
+                },
+                "fixedDeposit": {
+                    "minAmount": 5000,
+                    "interestRate": 11.25,
+                    "durationMonths": 12
+                }
+            }
+        ];
+
+        // DOM Elements
+        const amountInput = document.getElementById('amount');
+        const durationSelect = document.getElementById('duration');
+        const accountTypeSelect = document.getElementById('account-type');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultsContainer = document.getElementById('results-container');
+
+        // Calculate interest
+        function calculateInterest(principal, rate, timeInMonths) {
+            return (principal * rate * timeInMonths) / (100 * 12);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-LK', {
+                style: 'currency',
+                currency: 'LKR',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Find best accounts
+        function findBestAccounts() {
+            const amount = parseFloat(amountInput.value);
+            const duration = parseInt(durationSelect.value);
+            const accountType = accountTypeSelect.value;
+            
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid deposit amount");
+                return;
+            }
+            
+            let options = [];
+            
+            banks.forEach(bank => {
+                // Check savings account
+                if ((accountType === 'any' || accountType === 'savings') && 
+                    bank.savings && amount >= bank.savings.minAmount) {
+                    const interest = calculateInterest(amount, bank.savings.interestRate, 12);
+                    options.push({
+                        bankName: bank.name,
+                        logo: bank.logo,
+                        accountType: "Savings",
+                        minAmount: bank.savings.minAmount,
+                        interestRate: bank.savings.interestRate,
+                        duration: 12,
+                        totalInterest: interest
+                    });
+                }
+                
+                // Check fixed deposit
+                if ((accountType === 'any' || accountType === 'fixed') && 
+                    bank.fixedDeposit && amount >= bank.fixedDeposit.minAmount) {
+                    const months = bank.fixedDeposit.durationMonths || 12;
+                    const interest = calculateInterest(amount, bank.fixedDeposit.interestRate, months);
+                    options.push({
+                        bankName: bank.name,
+                        logo: bank.logo,
+                        accountType: "Fixed Deposit",
+                        minAmount: bank.fixedDeposit.minAmount,
+                        interestRate: bank.fixedDeposit.interestRate,
+                        duration: months,
+                        totalInterest: interest
+                    });
+                }
+            });
+            
+            // Sort by highest interest
+            options.sort((a, b) => b.totalInterest - a.totalInterest);
+            
+            displayResults(options, amount);
+        }
+
+        // Display results
+        function displayResults(options, amount) {
+            resultsContainer.innerHTML = '';
+            
+            if (options.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>No Suitable Accounts Found</h3>
+                        <p>Unfortunately, none of the banks in our database offer accounts that meet your criteria with a deposit of ${formatCurrency(amount)}.</p>
+                        <p>Try adjusting your deposit amount or account type preference.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const bestOption = options[0];
+            
+            // Best option card
+            resultsContainer.innerHTML = `
+                <div class="best-option">
+                    <h2><i class="fas fa-crown"></i> Best Recommendation</h2>
+                    <div class="bank-logo">
+                        <i class="${bestOption.logo}"></i>
+                    </div>
+                    <h3>${bestOption.bankName}</h3>
+                    <p>${bestOption.accountType} Account</p>
+                    <div class="highlight">${bestOption.interestRate}% Interest Rate</div>
+                    <div class="interest">+${formatCurrency(bestOption.totalInterest)} Interest</div>
+                    <p>Over ${bestOption.duration} months</p>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> All Available Options</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bank</th>
+                                <th>Account Type</th>
+                                <th>Min Amount</th>
+                                <th>Interest Rate</th>
+                                <th>Duration</th>
+                                <th>Total Interest</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${options.map(option => `
+                                <tr>
+                                    <td><i class="${option.logo}"></i> ${option.bankName}</td>
+                                    <td><span class="account-type ${option.accountType === 'Savings' ? 'savings' : 'fixed'}">${option.accountType}</span></td>
+                                    <td>${formatCurrency(option.minAmount)}</td>
+                                    <td>${option.interestRate}%</td>
+                                    <td>${option.duration} months</td>
+                                    <td class="interest-amount">${formatCurrency(option.totalInterest)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="explanation">
+                        <h3><i class="fas fa-lightbulb"></i> Why This Recommendation?</h3>
+                        <p>Based on your deposit of <strong>${formatCurrency(amount)}</strong>, the <strong>${bestOption.bankName} ${bestOption.accountType}</strong> offers the highest return with an interest rate of <strong>${bestOption.interestRate}%</strong>. Over ${bestOption.duration} months, you would earn <strong>${formatCurrency(bestOption.totalInterest)}</strong> in interest.</p>
+                        <p>This calculation assumes the interest is calculated using the simple interest method. Actual returns may vary based on compounding frequency and other terms.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Event listeners
+        calculateBtn.addEventListener('click', findBestAccounts);
+        
+        // Initialize with sample data
+        window.addEventListener('DOMContentLoaded', () => {
+            amountInput.value = "100000";
+        });
+    </script>
+</body>
+</html>
