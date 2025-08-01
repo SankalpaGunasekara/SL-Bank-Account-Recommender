@@ -289,23 +289,28 @@
             margin-top: 30px;
         }
 
-        @media (max-width: 768px) {
-            .form-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .results-container {
-                grid-template-columns: 1fr;
-            }
-            
-            header h1 {
-                font-size: 2.2rem;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-        }
+       @media (max-width: 768px) {
+
+    /* Fluid typography for headings */
+    header h1 { font-size: clamp(1.6rem, 5vw + 1rem, 2.2rem); }
+
+    /* Single-column layouts */
+    .form-container,
+    .results-container { grid-template-columns: 1fr; }
+
+    /* Prevent horizontal overflow on small screens */
+    .container { padding: 0 12px; }
+
+    /* Scale down padding in cards */
+    .card,
+    .best-option { padding: 20px 15px; }
+
+    /* Reduce table font size to avoid horizontal scroll */
+    table { font-size: 0.9rem; }
+
+    /* Allow table to scroll horizontally if still necessary */
+    .card table { display: block; overflow-x: auto; white-space: nowrap; }
+}
     </style>
 </head>
 <body>
